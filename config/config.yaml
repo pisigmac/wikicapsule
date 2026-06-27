@@ -1,0 +1,22 @@
+server:
+  transport: stdio
+  port: 8080
+  log_level: INFO
+
+wiki:
+  auto_commit: true
+  commit_message_template: "[wikicapsule] {operation}: {summary}"
+  lock_timeout_seconds: 30
+  search:
+    vector_model: "all-MiniLM-L6-v2"
+    hybrid_alpha: 0.5
+    rebuild_threshold: 10
+
+ingest:
+  default_tags: []
+  extract_images: true
+  summary_max_length: 2000
+
+lint:
+  orphan_threshold_days: 30
+  stale_check_enabled: true

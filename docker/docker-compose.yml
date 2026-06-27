@@ -1,0 +1,49 @@
+version: "3.8"
+
+services:
+  wikicapsule:
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile
+    container_name: wikicapsule-server
+    volumes:
+      - wiki-data:/wiki
+      - ../config/config.yaml:/wiki/.wikicapsule/config.yaml:ro
+    environment:
+      - WIKICAPSULE_WIKI_DIR=/wiki
+      - WIKICAPSULE_TRANSPORT=stdio
+      - WIKICAPSULE_LOG_LEVEL=INFO
+    stdin_open: true
+    tty: true
+    # Uncomment for SSE mode:
+    # ports:
+    #   - "8080:8080"
+    healthcheck:
+      test: ["CMD", "python", "-c", "import os; os.path.exists('/wiki/.wikicapsule/config.yaml')"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
+    restart: unless-stopped
+
+  # Optional: SSE mode service
+  # wikicapsule-sse:
+  #   build:
+  #     context: ..
+  #     dockerfile: docker/Dockerfile
+  #   container_name: wikicapsule-sse
+  #   volumes:
+  #     - wiki-data:/wiki
+  #   environment:
+  #     - WIKICAPSULE_WIKI_DIR=/wiki
+  #     - WIKICAPSULE_TRANSPORT=sse
+  #     - WIKICAPSULE_PORT=8080
+  #     - WIKICAPSULE_LOG_LEVEL=INFO
+  #   ports:
+  #     - "8080:8080"
+  #   command: ["--transport", "sse", "--port", "8080"]
+  #   restart: unless-stopped
+
+volumes:
+  wiki-data:
+    driver: local
